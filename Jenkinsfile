@@ -1,53 +1,37 @@
 pipeline {
-    agent any
+    agent any // Adjust the label as per your Jenkins agent
 
     environment {
-        VENV_DIR = "venv"
+        VENV_DIR = 'venv'  // Virtual environment directory
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                script {
-                    checkout scm
-                }
+                bat 'rmdir /s /q flask-app || echo "No existing directory to remove."' 
+                bat 'git clone -b main https://github.com/arunpandianj/flask-app.git'
+                echo "Repository cloned successfully."
             }
         }
 
-        stage('Set up Python Environment') {
+        stage('Setup Virtual Environment') {
             steps {
-                bat '''
-                python -m venv $VENV_DI
-                pip install -r requirements.txt
-                '''
-            }
-        }
-
-        stage('Stop Previous Flask Instance') {
-            steps {
-                script {
-                    bat 'pkill -f "python app.py" || true'  // Stops the previous instance if running
+                dir('flask-app') {
+                    bat 'python -m venv %VENV_DIR%'
+                    bat "%VENV_DIR%\\Scripts\\activate"
+                    bat "%VENV_DIR%\\Scripts\\pip install -r requirements.txt"
                 }
             }
         }
 
         stage('Run Flask App') {
             steps {
-                script {
-                    bat '''
-                    nohup python app.py > flask.log 2>&1 & echo $! > flask.pid
-                    '''
+                dir('flask-app') {
+                    bat "start /B %VENV_DIR%\\Scripts\\python app.py > flask.log 2>&1"
+                    bat "timeout 5" // Wait for 5 seconds before displaying logs
+                    bat "type flask.log"
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            echo 'Build Completed!'
-        }
-        failure {
-            echo 'Build Failed!'
         }
     }
 }
