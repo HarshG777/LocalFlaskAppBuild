@@ -14,7 +14,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat "call %VENV_DIR%\\Scripts\\activate && pip install -r requirements.txt"
+                bat "call %VENV_DIR%\\Scripts\\activate && pip install --upgrade pip && pip install flask -r requirements.txt"
             }
         }
 
