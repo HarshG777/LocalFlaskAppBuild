@@ -41,6 +41,11 @@ pipeline {
                     sh '. venv/bin/activate && nohup python3 app.py > flask.log 2>&1 &'
                     sh 'tail -f flask.log'  // Tail the log to verify it's running
                     echo "Flask app started successfully."
+                    sh 'sleep 10'  // Let the Flask app run for 10 seconds
+                    // Stop the Flask app after 10 seconds to simulate server shutdown
+                    sh 'pkill -f "python3 app.py" || true'
+                    echo "Flask app started and stopped after 10 seconds."
+                }
                 }
             }
         }
