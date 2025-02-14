@@ -16,8 +16,8 @@ pipeline {
 
         stage('Set up Python Environment') {
             steps {
-                sh '''
-                python -m venv $VENV_DIR
+                bat '''
+                python -m venv $VENV_DI
                 pip install -r requirements.txt
                 '''
             }
