@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                dir('flask-app') {
+                dir('LocalFlaskAppBuild') {
                     // Install the dependencies listed in requirements.txt
                     sh 'pip3 install -r requirements.txt'
                     echo "Dependencies installed."
@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Stop Existing Flask App') {
             steps {
-                dir('flask-app') {
+                dir('LocalFlaskAppBuild') {
                     // Kill any running Flask app instance
                     sh 'pkill -f "python3 app.py" || true'
                     echo "Stopped existing Flask app (if any)."
@@ -29,7 +29,7 @@ pipeline {
         }
         stage('Run Flask App') {
             steps {
-                dir('flask-app') {
+                dir('LocalFlaskAppBuild') {
                     // Start the Flask app in the background
                     sh 'nohup python3 app.py > flask.log 2>&1 &'
                     sh 'tail -f flask.log'  // Tail the log to verify it's running
