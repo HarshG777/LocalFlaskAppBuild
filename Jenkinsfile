@@ -51,6 +51,8 @@ pipeline {
                     '''
                     // Wait for the Flask app to initialize
                     sh 'sleep 10'
+                    // Tail the flask.log to show its output in Jenkins console
+                    sh 'tail -n 20 flask.log'  // Show last 20 lines of log
                     // Stop the Flask app after 10 seconds using the saved PID
                     sh '''
                     echo "Stopping Flask app..."
