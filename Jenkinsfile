@@ -9,7 +9,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 bat 'rmdir /s /q flask-app || echo "No existing directory to remove."' 
-                bat 'git clone -b main https://github.com/arunpandianj/flask-app.git'
+                bat 'git clone -b master https://github.com/HarshG777/LocalFlaskAppBuild.git'
                 echo "Repository cloned successfully."
             }
         }
@@ -27,7 +27,7 @@ pipeline {
         stage('Run Flask App') {
             steps {
                 dir('flask-app') {
-                    bat "start /B %VENV_DIR%\\Scripts\\python app.py > flask.log 2>&1"
+                    bat "start /B %VENV_DIR%\\Scripts\\python3 app.py > flask.log 2>&1"
                     bat "timeout 5" // Wait for 5 seconds before displaying logs
                     bat "type flask.log"
                 }
