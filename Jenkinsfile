@@ -4,7 +4,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clean up previous app instance and clone the repository
-                sh 'rm -rf LocalFlaskAppBuild || true'
+                deleteDir()
                 sh 'git clone -b master https://github.com/HarshG777/LocalFlaskAppBuild.git'
                 echo "Repository cloned successfully."
             }
