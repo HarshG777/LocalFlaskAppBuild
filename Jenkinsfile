@@ -1,20 +1,27 @@
 pipeline {
     agent { label 'agent1' }
     stages {
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()  // Clean the workspace
+                echo "Workspace cleaned."
+            }
+        }
         stage('Clone Repository') {
             steps {
-                // Clean up previous app instance and clone the repository
-                deleteDir()
+                // Clone the repository again
                 sh 'git clone -b master https://github.com/HarshG777/LocalFlaskAppBuild.git'
                 echo "Repository cloned successfully."
             }
         }
-        stage('Install Dependencies') {
+        stage('Set Up Virtual Environment') {
             steps {
                 dir('LocalFlaskAppBuild') {
-                    // Install the dependencies listed in requirements.txt
-                    sh 'pip3 install -r requirements.txt'
-                    echo "Dependencies installed."
+                    // Create a virtual environment
+                    sh 'python3 -m venv venv'
+                    // Activate the virtual environment and install dependencies
+                    sh '. venv/bin/activate && pip install -r requirements.txt'
+                    echo "Virtual environment setup and dependencies installed."
                 }
             }
         }
@@ -30,8 +37,8 @@ pipeline {
         stage('Run Flask App') {
             steps {
                 dir('LocalFlaskAppBuild') {
-                    // Start the Flask app in the background
-                    sh 'nohup python3 app.py > flask.log 2>&1 &'
+                    // Activate the virtual environment and start the Flask app
+                    sh '. venv/bin/activate && nohup python3 app.py > flask.log 2>&1 &'
                     sh 'tail -f flask.log'  // Tail the log to verify it's running
                     echo "Flask app started successfully."
                 }
