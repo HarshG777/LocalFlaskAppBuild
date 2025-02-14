@@ -45,7 +45,7 @@ pipeline {
                     // Stop the Flask app after 10 seconds to simulate server shutdown
                     sh 'pkill -f "python3 app.py" || true'
                     echo "Flask app started and stopped after 10 seconds."
-                }
+                
                 }
             }
         }
