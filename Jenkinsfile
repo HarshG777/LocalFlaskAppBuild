@@ -5,7 +5,7 @@ pipeline {
             steps {
                 // Clean up previous app instance and clone the repository
                 sh 'rm -rf flask-app || true'
-                sh 'git clone -b main https://github.com/arunpandianj/flask-app.git'
+                sh 'git clone -b master https://github.com/HarshG777/LocalFlaskAppBuild.git'
                 echo "Repository cloned successfully."
             }
         }
