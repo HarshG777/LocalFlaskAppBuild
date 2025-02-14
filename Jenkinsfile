@@ -1,26 +1,20 @@
 pipeline {
-    agent any
-
-    environment {
-        VENV_DIR = 'venv'
-    }
-
+    agent { label 'java_agent' }
     stages {
-        stage('Setup Virtual Environment') {
+        stage('Clone Repository') {
             steps {
-                bat "python -m venv %VENV_DIR%"
+                sh 'rm -rf flask-app || true'
+                sh 'git clone -b main https://github.com/arunpandianj/flask-app.git'
+                echo "Repository cloned successfully."
             }
         }
-
-        stage('Install Dependencies') {
+        stage('Run') {
             steps {
-                bat "call %VENV_DIR%\\Scripts\\activate && pip install --upgrade pip && pip install flask -r requirements.txt"
-            }
-        }
-
-        stage('Run Flask App') {
-            steps {
-                bat "call %VENV_DIR%\\Scripts\\activate && python app.py"
+                dir('flask-app')
+                {
+                sh 'python3 app.py > flask.log 2>&1 &'
+                sh 'tail -f flask.log'
+                }
             }
         }
     }
