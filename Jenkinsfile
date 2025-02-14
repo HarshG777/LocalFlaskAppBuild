@@ -29,8 +29,12 @@ pipeline {
             steps {
                 dir('LocalFlaskAppBuild') {
                     // Kill any running Flask app instance
-                    sh 'pkill -f "python3 app.py" || true'
+                    sh '''
+                    echo "Checking for running Flask processes..."
+                    ps aux | grep "python3 app.py"  # List running processes
+                    pkill -f "python3 app.py" || true
                     echo "Stopped existing Flask app (if any)."
+                    '''
                 }
             }
         }
@@ -41,11 +45,17 @@ pipeline {
                     sh '. venv/bin/activate && nohup python3 app.py > flask.log 2>&1 &'
                     sh 'tail -f flask.log'  // Tail the log to verify it's running
                     echo "Flask app started successfully."
-                    sh 'sleep 10'  // Let the Flask app run for 10 seconds
-                    // Stop the Flask app after 10 seconds to simulate server shutdown
-                    sh 'pkill -f "python3 app.py" || true'
-                    echo "Flask app started and stopped after 10 seconds."
-                
+
+                    // Wait for 10 seconds and check if it's running
+                    sh 'sleep 10'
+
+                    // Check and stop the Flask app after 10 seconds
+                    sh '''
+                    echo "Stopping Flask app..."
+                    ps aux | grep "python3 app.py"  # Check if Flask is still running
+                    pkill -f "python3 app.py" || true
+                    echo "Flask app stopped successfully."
+                    '''
                 }
             }
         }
