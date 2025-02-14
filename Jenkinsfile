@@ -42,18 +42,20 @@ pipeline {
             steps {
                 dir('LocalFlaskAppBuild') {
                     // Activate the virtual environment and start the Flask app
-                    sh '. venv/bin/activate && nohup python3 app.py > flask.log 2>&1 &'
-                    sh 'tail -f flask.log'  // Tail the log to verify it's running
+                    sh '''
+                    . venv/bin/activate
+                    nohup python3 app.py > flask.log 2>&1 &
+                    # Capture the process ID of the Flask app
+                    echo $! > flask_pid.txt
                     echo "Flask app started successfully."
-
-                    // Wait for 10 seconds and check if it's running
+                    '''
+                    // Wait for the Flask app to initialize
                     sh 'sleep 10'
-
-                    // Check and stop the Flask app after 10 seconds
+                    // Stop the Flask app after 10 seconds using the saved PID
                     sh '''
                     echo "Stopping Flask app..."
-                    ps aux | grep "python3 app.py"  # Check if Flask is still running
-                    pkill -f "python3 app.py" || true
+                    PID=$(cat flask_pid.txt)
+                    kill $PID || true
                     echo "Flask app stopped successfully."
                     '''
                 }
